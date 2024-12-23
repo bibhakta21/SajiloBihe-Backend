@@ -1,12 +1,16 @@
 const express = require("express");
-const connectDB = require("../SajiloBihe Backend/config/db");
+const connectDb = require("./config/db");
+const AuthRouter = require("./routes/AuthRoutes");
 
 const app = express();
 
-// Connect to the database
-connectDB();
+connectDb();
 
+app.use(express.json());
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.use("/api/auth", AuthRouter);
+
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
