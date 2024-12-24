@@ -1,0 +1,17 @@
+Day 1: Project Setup & Environment Configuration 
+1.	Create ER Diagram for the project and initialize the project with npm and set up a Git repository
+2.	Install and configure Express.js, MongoDB, and other necessary packages like mongoose, and nodemon
+3.	Set up the folder structure (for example: models, routes, controllers)
+4.	Configure database connection using Mongoose and set up environment variables
+
+Day 2: User Authentication 
+1.	Design user schema (name, email, password, role): 
+2.	Implement JWT-based authentication (sign-up, login, logout)
+3.	Add password hashing with bcrypt
+4.	Test authentication endpoints using Postman
+
+Day 3: Venue Management 
+1.	Design venue schema (name, location, price, capacity, availability)
+2.	Implement CRUD operations for venues (create, read, update, delete)
+3.	Set up file upload functionality for venue images
+4.	Test CRUD and upload APIs: 1 hour
