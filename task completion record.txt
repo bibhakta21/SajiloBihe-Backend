@@ -15,3 +15,10 @@ Day 3: Venue Management
 2.	Implement CRUD operations for venues (create, read, update, delete)
 3.	Set up file upload functionality for venue images
 4.	Test CRUD and upload APIs: 1 hour
+
+
+Day 4: Booking Management
+1.	Design booking schema (user, venue, date, time slot, status)
+2.	Implement booking endpoints (create booking, get user bookings, cancel bookings)
+3.	Add validation to check venue availability before booking
+4.	Test all booking-related endpoints
