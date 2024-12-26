@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "bcryptjs": "^2.4.3",
     "express": "^4.21.0",
     "joi": "^17.13.3",
