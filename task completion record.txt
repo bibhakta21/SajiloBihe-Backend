@@ -35,4 +35,12 @@ Day 6: Admin Panel APIs
 4.	Test admin APIs: done
 
 
+Day 7: Notifications & Logs
+1.	Set up email notifications
+2.	Send confirmation emails for bookings and cancellations (for now only for bookings)
+3.	Test email and logging functionalities
+
+
+
+
 
