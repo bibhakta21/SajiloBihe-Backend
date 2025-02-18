@@ -1,50 +1,40 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const SECRET_KEY = "8261ba19898d0dcdfe6c0c411df74b587b2e54538f5f451633b71e39f957cf01";
-const Credential = require("../model/Crendential")
-const Customer = require("../model/Customer");
+const User = require("../model/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 
-const register = async (req, res) => {
+// Register user
+exports.registerUser = async (req, res) => {
   try {
-      console.log("Incoming Registration Data:", req.body); // Debugging
+    const { username, email, phone, password, role, avatar } = req.body;
 
-      const { email, number, username, password, role } = req.body;
+    // Check if username already exists
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ error: "Username already exists. Please try another." });
+    }
 
-      // Check if username already exists
-      const existingUser = await Credential.findOne({ username }); // ✅ Use Credential
-      if (existingUser) {
-          console.log("Username already exists"); // Debugging
-          return res.status(400).json({ message: "Username already exists" });
-      }
+    // Check if email already exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ error: "Email is already in use. Please use a different email." });
+    }
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
+    // Check if phone number already exists
+    const existingPhone = await User.findOne({ phone });
+    if (existingPhone) {
+      return res.status(400).json({ error: "Phone number is already in use. Please use a different number." });
+    }
 
-      // Create new customer
-      const newCustomer = new Customer({
-          email,
-          contact_no: number
-      });
+    // Create and save new user
+    const user = new User({ username, email, phone, password, role, avatar });
+    await user.save();
 
-      const savedCustomer = await newCustomer.save();
-      console.log("Customer Created:", savedCustomer); // Debugging
-
-      // Create credentials linked to customer
-      const newCred = new Credential({ // ✅ Use Credential instead of Cred
-          username,
-          password: hashedPassword,
-          role: role || "customer",
-          customer_id: savedCustomer._id // Link customer ID
-      });
-
-      await newCred.save();
-      console.log("Credentials Created:", newCred); // Debugging
-
-      res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ success: "User registered successfully!" });
   } catch (error) {
-      console.error("Registration Error:", error);
-      res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
