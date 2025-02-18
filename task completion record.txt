@@ -41,6 +41,31 @@ Day 7: Notifications & Logs
 3.	Test email and logging functionalities
 
 
+Day 8: API Optimization & Documentation 
+1.	Optimize database queries and API response times
+2.	Finalize and test the backend
+3.	Write API Documentation
+
+Day 9: Testing & Debugging 
+1.	Write unit tests for critical backend functions
+2.	Write integration tests for API endpoints
+3.	Debug and fix any issues found during testing
+
+Day 10: Code Optimization & Final Refinement
+1.	Review and refactor code for readability, performance, and maintainability: 
+2.	Ensure API response consistency (For example: proper error handling, status codes)
+3.	Optimize database queries for better performance
+4.	Conduct a final review and finalize the backend for frontend integration
+
+
+
+code refinement and addition of features
+Refactored Code for Readability and Maintainability
+Improved naming conventions and structure
+added validation error messages and status codes
+Added token expiration check for password changes
+Configured CORS for frontend communication
+
 
 
 
