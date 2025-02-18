@@ -39,33 +39,32 @@ exports.registerUser = async (req, res) => {
 };
 
 
-const login = async (req, res) => {
-  const { username, password } = req.body;
-  const cred = await Credential.findOne({ username });
+// Login user
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  // Check if the username exists or if password comparison fails
-  if (!cred || !(await bcrypt.compare(password, cred.password))) {
-    return res.status(403).send('Invalid username or password');
+    // Check if the email exists in the database
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "Email does not exist" });
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Incorrect password" });
+    }
+
+    // Generate JWT Token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.json({ token, success: "Login successful!" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  // Generate the JWT token with additional user details (email and number)
-  const token = jwt.sign(
-    { 
-      username: cred.username, 
-      role: cred.role,
-      email: cred.email, // Add email to the token
-      number: cred.number // Add contact number to the token
-    },
-    SECRET_KEY,
-    { expiresIn: '1h' }
-  );
-
-  // Send the token back to the frontend
-  res.json({ token });
 };
-
-
-module.exports = {
-  login,
-  register
-}
