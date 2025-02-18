@@ -93,3 +93,9 @@ exports.getUserByMe = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Delete user (Admin)
+exports.deleteUser = async (req, res) => {
+  await User.findByIdAndDelete(req.params.id);
+  res.json({ message: "User deleted" });
+};
