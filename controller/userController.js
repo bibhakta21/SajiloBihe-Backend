@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
-
 // Register user
 exports.registerUser = async (req, res) => {
   try {
@@ -83,6 +82,12 @@ exports.getUserById = async (req, res) => {
   res.json(user);
 };
 
+// Delete user (Admin)
+exports.deleteUser = async (req, res) => {
+  await User.findByIdAndDelete(req.params.id);
+  res.json({ message: "User deleted" });
+};
+
 // Get current user details
 exports.getUserByMe = async (req, res) => {
   try {
@@ -92,12 +97,6 @@ exports.getUserByMe = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
-
-// Delete user (Admin)
-exports.deleteUser = async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.json({ message: "User deleted" });
 };
 
 exports.updateUser = async (req, res) => {
@@ -174,5 +173,103 @@ exports.createUser = async (req, res) => {
     res.status(201).json({ success: "User created successfully!", user });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+
+
+
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    // Find user by ID
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Compare old password with stored password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) return res.status(400).json({ error: "Old password is incorrect" });
+
+    // Update with new password (hashed in pre-save hook)
+    user.password = newPassword;
+    user.passwordChangedAt = Date.now();
+    await user.save();
+
+    res.json({ success: "Password changed successfully!" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "Email does not exist" });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // Token valid for 10 minutes
+
+    await user.save();
+
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+
+    // Send email using nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Password Reset Request",
+      text: `You have requested to reset your password. Click the link below to reset it:\n\n${resetUrl}\n\nThis link is valid for 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ success: "Check your Gmail. Reset link has been sent!" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() }, // Ensure token is not expired
+    });
+
+    if (!user) return res.status(400).json({ error: "Invalid or expired token" });
+
+    // Update password and set passwordChangedAt
+    user.password = newPassword; // Will be hashed due to pre-save hook
+    user.passwordChangedAt = Date.now();
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.json({ message: "Password reset successfully! Please log in again." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
