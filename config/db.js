@@ -2,13 +2,11 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    // Connect to MongoDB database
-    await mongoose.connect("mongodb://localhost:27017/db_event_venue_management", {
-    });
-    console.log("MongoDB Connected");
-  } catch (e) {
-    console.error("MongoDB not connected:", e.message);
-    process.exit(1);  // Exit process with failure
+    await mongoose.connect("mongodb://127.0.0.1:27017/db_event_venue_management_final");
+    console.log("MongoDB Connected Successfully!");
+  } catch (error) {
+    console.error("MongoDB Connection Failed:", error.message);
+    process.exit(1);
   }
 };
 
