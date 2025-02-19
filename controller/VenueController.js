@@ -43,6 +43,26 @@ exports.getVenueById = async (req, res) => {
   }
 };
 
+// Update venue (Admin only)
+exports.updateVenue = async (req, res) => {
+  try {
+    let updatedData = req.body;
+
+    // If new images are uploaded, update images
+    if (req.files && req.files.length > 0) {
+      updatedData.images = req.files.map(file => `/uploads/${file.filename}`);
+    }
+
+    const updatedVenue = await Venue.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+
+    if (!updatedVenue) return res.status(404).json({ error: "Venue not found" });
+
+    res.json({ message: "Venue updated successfully", updatedVenue });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 
 
