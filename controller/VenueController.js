@@ -21,6 +21,15 @@ exports.createVenue = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// Get all venues (Public)
+exports.getAllVenues = async (req, res) => {
+  try {
+    const venues = await Venue.find();
+    res.json(venues);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
 
