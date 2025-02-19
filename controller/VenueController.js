@@ -31,6 +31,17 @@ exports.getAllVenues = async (req, res) => {
   }
 };
 
+// Get venue by ID (Public)
+exports.getVenueById = async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id);
+    if (!venue) return res.status(404).json({ error: "Venue not found" });
+
+    res.json(venue);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
 
