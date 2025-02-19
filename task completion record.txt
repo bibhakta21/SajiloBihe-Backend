@@ -65,6 +65,7 @@ Improved naming conventions and structure
 added validation error messages and status codes
 Added token expiration check for password changes
 Configured CORS for frontend communication
+refactored code of venue api
 
 
 
