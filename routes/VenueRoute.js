@@ -1,23 +1,21 @@
 const express = require("express");
+const { 
+  getAllVenues, 
+  getVenueById, 
+  createVenue, 
+  updateVenue, 
+  deleteVenue 
+} = require("../controller/VenueController");
+
+const { authMiddleware, adminMiddleware } = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware"); // Import upload middleware
+
 const router = express.Router();
-const { findAll, save, findById, deleteById, update } = require("../controller/VenueController");
-const { authenticateToken } = require("../security/Auth");
 
-const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: function (req, res, cb) {
-    cb(null, "venue_images");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-const upload = multer({ storage });
-
-router.get("/", findAll);
-router.post("/", authenticateToken, upload.single("file"), save);
-router.get("/:id", authenticateToken, findById);
-router.delete("/:id", authenticateToken, deleteById);
-router.put("/:id", authenticateToken, update);
+router.get("/", getAllVenues);
+router.get("/:id", getVenueById);
+router.post("/", authMiddleware, adminMiddleware, upload.array("images", 5), createVenue); // Accept up to 5 images
+router.put("/:id", authMiddleware, adminMiddleware, upload.array("images", 5), updateVenue);
+router.delete("/:id", authMiddleware, adminMiddleware, deleteVenue);
 
 module.exports = router;
