@@ -21,6 +21,7 @@ exports.createVenue = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 // Get all venues (Public)
 exports.getAllVenues = async (req, res) => {
   try {
@@ -63,6 +64,14 @@ exports.updateVenue = async (req, res) => {
   }
 };
 
+// Delete venue (Admin only)
+exports.deleteVenue = async (req, res) => {
+  try {
+    const deletedVenue = await Venue.findByIdAndDelete(req.params.id);
+    if (!deletedVenue) return res.status(404).json({ error: "Venue not found" });
 
-
-
+    res.json({ message: "Venue deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
