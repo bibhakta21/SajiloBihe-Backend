@@ -47,3 +47,15 @@ exports.getBookingById = async (req, res) => {
   };
 
 
+//  Get all bookings for the logged-in user
+exports.getUserBookings = async (req, res) => {
+    try {
+      const bookings = await Booking.find({ user: req.user.id })
+        .populate("venue", "name price capacity location images");
+  
+      res.json(bookings);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
