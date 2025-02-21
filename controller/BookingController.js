@@ -59,3 +59,16 @@ exports.getUserBookings = async (req, res) => {
     }
   };
   
+
+//  Get all bookings (Admin only)
+exports.getAllBookings = async (req, res) => {
+    try {
+      const bookings = await Booking.find()
+        .populate("venue", "name images") // Get venue name & image
+        .populate("user", "username email phone"); // Get user details
+  
+      res.json(bookings);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
