@@ -92,3 +92,18 @@ exports.cancelBooking = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+
+  
+// Approve booking (Admin only)
+exports.approveBooking = async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id);
+      if (!booking) return res.status(404).json({ error: "Booking not found" });
+  
+      booking.status = "approved";
+      await booking.save();
+      res.json({ message: "Booking approved", booking });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
