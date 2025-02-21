@@ -1,56 +1,33 @@
-const Booking = require('../model/Booking');
-const nodemailer = require("nodemailer");
+const Booking = require("../model/Booking");
+const Venue = require("../model/Venue");
 
-const findAll = async (req, res) => {
-    try {
-        const bookings = await Booking.find().populate(["customerId", "venueId"]);
-        res.status(200).json(bookings);
-    } catch (e) {
-        res.status(500).json({ message: "Error fetching bookings", error: e });
+exports.createBooking = async (req, res) => {
+  try {
+    const { venueId } = req.body;
+
+    // Check if the venue exists
+    const venue = await Venue.findById(venueId);
+    if (!venue) return res.status(404).json({ error: "Venue not found" });
+
+    //  Check if the user has already booked this venue
+    const existingBooking = await Booking.findOne({ user: req.user.id, venue: venueId });
+    if (existingBooking) {
+      return res.status(400).json({ error: "You have already booked this venue." });
     }
+
+    //  Proceed with booking if it's a new booking
+    const booking = new Booking({
+      user: req.user.id,
+      venue: venueId,
+      date: new Date(), // Store the date of booking
+    });
+
+    await booking.save();
+    res.status(201).json({ message: "Booking request submitted!", booking });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-const save = async (req, res) => {
-    try {
-        const booking = new Booking(req.body);
-        await booking.save();
 
-        // Configure nodemailer transporter
-        const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false,
-            auth: {
-                user: "bibhakta10@gmail.com", 
-                pass: "megatron321@", 
-            },
-        });
 
-        // Send email notification
-        const info = await transporter.sendMail({
-            from: "bibhakta10@gmail.com", // Sender's email
-            to: req.body.customerEmail, 
-            subject: "Booking Confirmation",
-            html: `
-                <h1>Booking Confirmed</h1>
-                <p>Thank you for booking with us!</p>
-                <p>Booking Details:</p>
-                <ul>
-                    <li>Booking ID: ${booking.id}</li>
-                    <li>Venue: ${req.body.venueName}</li> <!-- Include venue details if available -->
-                    <li>Date: ${req.body.date}</li>
-                </ul>
-                <p>We look forward to hosting you!</p>
-            `,
-        });
-
-        res.status(201).json({ booking, info });
-    } catch (e) {
-        res.status(500).json({ message: "Error saving booking", error: e });
-    }
-};
-
-module.exports = {
-    findAll,
-    save,
-};
