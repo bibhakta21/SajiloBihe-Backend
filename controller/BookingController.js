@@ -72,3 +72,23 @@ exports.getAllBookings = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+
+  //  Cancel booking (User only, within 1 day)
+exports.cancelBooking = async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id);
+      if (!booking) return res.status(404).json({ error: "Booking not found" });
+  
+      // Check if user is owner of the booking or an admin
+      if (req.user.id !== booking.user.toString() && req.user.role !== "admin") {
+        return res.status(403).json({ error: "Access denied" });
+      }
+  
+      // If the booking exists, delete it from the database
+      await Booking.findByIdAndDelete(req.params.id);
+  
+      res.json({ message: "Booking successfully canceled and removed." });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
