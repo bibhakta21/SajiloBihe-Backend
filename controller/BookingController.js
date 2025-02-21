@@ -30,4 +30,20 @@ exports.createBooking = async (req, res) => {
 };
 
 
+//  Get booking details (User only)
+exports.getBookingById = async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id).populate("venue user", "name email location");
+      if (!booking) return res.status(404).json({ error: "Booking not found" });
+  
+      if (req.user.id !== booking.user._id.toString() && req.user.role !== "admin") {
+        return res.status(403).json({ error: "Access denied" });
+      }
+  
+      res.json(booking);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
 
