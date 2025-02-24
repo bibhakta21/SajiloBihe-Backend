@@ -9,6 +9,7 @@ router.post("/submit", submitContactForm);
 // Fetch all contact requests (Admin only)
 router.get("/", authMiddleware, adminMiddleware, getAllContacts);
 
-
+// Route to delete contact request by Admin
+router.delete("/:id", authMiddleware, adminMiddleware, deleteContact);
 
 module.exports = router;
