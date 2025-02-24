@@ -50,7 +50,17 @@ const deleteContact = async (req, res) => {
 };
 
 
+const getAllContacts = async (req, res) => {
+  try {
+    const contacts = await ContactRequest.find(); // Fetch all contact requests
+    res.status(200).json(contacts);
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+    res.status(500).json({ error: "Failed to fetch contacts. Please try again later." });
+  }
+};
 
+module.exports = { submitContactForm, deleteContact, getAllContacts };
 
 
 
