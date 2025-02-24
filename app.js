@@ -11,6 +11,7 @@ const connectDb = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const venueRoutes = require("./routes/VenueRoute");
 const bookingRoutes = require("./routes/BookingRoute");
+const contactRoutes = require("./routes/contactRoute");
 
 
 
@@ -48,6 +49,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
 app.use("/api/users", userRoutes);
 app.use("/api/venues", venueRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/contact", contactRoutes);
 
 
 
