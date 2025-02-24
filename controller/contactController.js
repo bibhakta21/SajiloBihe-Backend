@@ -29,7 +29,25 @@ const submitContactForm = async (req, res) => {
 module.exports = { submitContactForm };
 
 
+const deleteContact = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // Check if contact request exists
+    const contact = await ContactRequest.findById(id);
+    if (!contact) {
+      return res.status(404).json({ error: "Contact request not found!" });
+    }
+
+    // Delete contact request
+    await ContactRequest.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Contact request deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting contact request:", error);
+    res.status(500).json({ error: "Failed to delete contact request. Please try again later." });
+  }
+};
 
 
 
