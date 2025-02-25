@@ -1,6 +1,6 @@
 const Story = require("../model/Story");
 
-// Add Story (Admin Only)
+//  Add Story (Admin Only)
 exports.addStory = async (req, res) => {
   try {
     const { name, date, story } = req.body;
@@ -30,4 +30,12 @@ exports.addStory = async (req, res) => {
   }
 };
 
-
+// Get All Stories (Public)
+exports.getAllStories = async (req, res) => {
+  try {
+    const stories = await Story.find().sort({ date: -1 }); // Sort by latest stories
+    res.json(stories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
